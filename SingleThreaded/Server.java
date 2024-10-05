@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    public void run() {
+    public void run() throws IOException {
         int port = 8010;
         try (ServerSocket socket = new ServerSocket(port)) {
             socket.setSoTimeout(10000);
@@ -16,9 +16,12 @@ public class Server {
                     Socket acceptedConnection = socket.accept();
                     System.out.println("Accepted connection from " + acceptedConnection.getRemoteSocketAddress());
                     PrintWriter toClient = new PrintWriter(acceptedConnection.getOutputStream());
-                    toClient.println("Hello, client!");
                     BufferedReader fromClient = new BufferedReader(
                             new InputStreamReader(acceptedConnection.getInputStream()));
+                    toClient.println("Hello, client!");
+                    toClient.close();
+                    fromClient.close();
+                    acceptedConnection.close();
                 } catch (IOException e) {
                     System.err.println("Error accepting connection: " + e.getMessage());
                     e.printStackTrace();
